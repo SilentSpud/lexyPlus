@@ -1,4 +1,4 @@
-import Fetch from "./GMFetch";
+import fetch from "./GMFetch";
 
 // Change the favicon link to use https
 (() => {
@@ -16,7 +16,7 @@ document.querySelectorAll("strong").forEach((el) => {
   });
 });
 const APIKey = sessionStorage.getItem("lexyPlus/apiKey") as string;
-Fetch("https://api.nexusmods.com/v1/users/validate.json", {
+fetch("https://api.nexusmods.com/v1/users/validate.json", {
   headers: {
     APIKey,
   },
