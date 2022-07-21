@@ -1,4 +1,4 @@
-import fetch from "./GMFetch";
+import fetch from "./GM_fetch";
 
 // Change the favicon link to use https
 (() => {
@@ -20,6 +20,9 @@ fetch("https://api.nexusmods.com/v1/users/validate.json", {
   headers: {
     APIKey,
   },
-});
+}).then(
+  (res) => console.log(res),
+  (err) => console.error(err)
+);
 
 export default {};

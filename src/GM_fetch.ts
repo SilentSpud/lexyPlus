@@ -1,4 +1,5 @@
 // fetch simplified into a GM_xmlhttpRequest call to bypass CORS issues.
+// Response doesn't allow for setting URLs, so don' rely on it.
 export const GM_fetch = async (url: RequestInfo | URL, options?: RequestInit | undefined) =>
   new Promise((resolve, reject) => {
     const method = (options?.method && ["HEAD", "POST"].includes(options.method) ? options.method : "GET") as "GET" | "HEAD" | "POST";
