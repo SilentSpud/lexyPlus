@@ -1,10 +1,9 @@
 import fetch from "./GM_fetch";
 
-// Change the favicon link to use https
-(() => {
-  const icon = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-  icon.href = icon.href.replace("http:", "https:");
-})();
+// Change the favicon link to use https (unless it's already fixed)
+document.querySelectorAll<HTMLLinkElement>(`link[rel~="icon"][href^="http:"]`).forEach((el) => {
+  el.href = el.href.replace("http:", "https:");
+});
 
 document.querySelectorAll("strong").forEach((el) => {
   const selection = window.getSelection() as Selection;
