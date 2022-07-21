@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "types": ["tampermonkey"],
+    "lib": ["dom", "esnext"],
+    "skipLibCheck": true,
+    "sourceMap": false,
+    "inlineSourceMap": true,
+    "noImplicitAny": true,
+    "strict": true,
+    "jsx": "react",
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "outDir": "out"
+  },
+  "include": ["src/**/*"]
+}

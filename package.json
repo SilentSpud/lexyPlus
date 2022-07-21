@@ -1,0 +1,40 @@
+{
+  "name": "lotdplus",
+  "displayName": "LOTD+",
+  "version": "0.1.0",
+  "description": "silent's personal userscripts",
+  "repository": "https://github.com/silentspud/LexyPlus",
+  "author": "Silent Spud",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "start": "cross-env webpack",
+    "dev": "cross-env webpack --watch",
+    "build": "cross-env NODE_ENV=production webpack",
+    "lint": "eslint",
+    "postlint": "cross-env prettier --ignore-path .eslintignore --no-error-on-unmatched-pattern --list-different '**/*.{js,jsx,ts,tsx,json,html,css,less,scss,yml}'",
+    "lint:fix": "eslint --fix",
+    "postlint:fix": "cross-env prettier --ignore-path .eslintignore --write '**/*.{js,jsx,ts,tsx,json,html,css,less,scss,yml}'",
+    "clean": "rimraf node_modules yarn.lock"
+  },
+  "dependencies": {
+    "@swc/core": "^1.2.218",
+    "cross-env": "^7.0.3",
+    "dexie": "^3.2.2",
+    "regenerator-runtime": "^0.13.9",
+    "swc-loader": "^0.2.3",
+    "typescript": "^4.7.4",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "webpack": "^5.73.0",
+    "webpack-userscript": "^2.5.8"
+  },
+  "devDependencies": {
+    "@types/tampermonkey": "^4.0.3",
+    "@typescript-eslint/eslint-plugin": "^5.30.7",
+    "@typescript-eslint/parser": "^5.30.7",
+    "eslint": "^8.20.0",
+    "prettier": "^2.7.1",
+    "rimraf": "^3.0.2",
+    "webpack-cli": "^4.10.0"
+  }
+}
