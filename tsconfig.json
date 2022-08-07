@@ -10,12 +10,17 @@
     "inlineSourceMap": false,
     "noImplicitAny": true,
     "strict": true,
-    "jsx": "react",
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "esModuleInterop": true,
     "suppressImplicitAnyIndexErrors": true,
-    "outDir": "out"
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react",
+    "jsxFactory": "VM.createElement",
+    "jsxFragmentFactory": "VM.Fragment",
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
 }
