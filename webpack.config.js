@@ -1,5 +1,5 @@
+// @ts-check
 import WebpackUserscript from "webpack-userscript";
-import UglifyJsPlugin from "uglifyjs-webpack-plugin";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -7,33 +7,22 @@ const dev = process.env.NODE_ENV === "development";
 const outputPath = process.env.OUTPUT || join(dirname(fileURLToPath(import.meta.url)), "build");
 const basePath = process.env.BASE_PATH;
 
+/** @type { import('webpack').Configuration } */
 const WebpackConfig = {
   mode: dev ? "development" : "production",
-  optimization: {
-    minimizer: [
-      new UglifyJsPlugin({
-        parallel: true,
-        uglifyOptions: {
-          toplevel: true,
-          keep_fnames: true,
-          mangle: true,
-          output: {
-            beautify: false,
-            comments: false,
-          },
-        },
-      }),
-    ],
-  },
   entry: {
     lexy: "./src/index.ts",
+  },
+  externals: {
+    dexie: "Dexie",
+    "@violentmonkey/dom": "VM"
   },
   output: {
     path: outputPath,
     filename: "[name].user.js",
   },
   resolve: {
-    extensions: [".ts", ".ts", ".js"],
+    extensions: [".ts", ".tsx", ".js", ".jsx"],
   },
   module: {
     rules: [
@@ -41,14 +30,7 @@ const WebpackConfig = {
         test: /\.tsx?$/,
         exclude: /node_modules/,
         use: {
-          loader: "swc-loader",
-          options: {
-            jsc: {
-              parser: {
-                syntax: "typescript",
-              },
-            },
-          },
+          loader: "swc-loader"
         },
       },
     ],
@@ -63,6 +45,10 @@ const WebpackConfig = {
         include: ["https://lexyslotd.com/guide/*"],
         namespace: "LOTDPlus",
         grant: ["GM_xmlhttpRequest"],
+        require: [
+          "https://unpkg.com/dexie@3.2.2/dist/dexie.min.js", // Dexie for database
+          "https://cdn.jsdelivr.net/npm/@violentmonkey/dom@2" // Violentmonkey DOM for React
+        ]
       }),
       proxyScript: {
         enable: false,

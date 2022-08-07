@@ -1,0 +1,15 @@
+{
+  "minify": true,
+  "jsc": {
+    "parser": {
+      "syntax": "typescript"
+    },
+    "target": "es2018",
+    "transform": {
+      "react": {
+        "pragma": "VM.createElement",
+        "pragmaFrag": "VM.Fragment"
+      }
+    }
+  }
+}
