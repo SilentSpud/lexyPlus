@@ -13,6 +13,9 @@ const WebpackConfig = {
   entry: {
     lexy: "./src/index.ts",
   },
+  experiments: {
+    topLevelAwait: true,
+  },
   externals: {
     dexie: "Dexie",
   },
@@ -22,6 +25,13 @@ const WebpackConfig = {
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"],
+  },
+  devServer: {
+    static: {
+      directory: outputPath,
+    },
+    compress: true,
+    port: 9080,
   },
   module: {
     rules: [
@@ -49,7 +59,7 @@ const WebpackConfig = {
         ],
       }),
       proxyScript: {
-        enable: false,
+        baseUrl: "http://localhost:9080/"
       },
     }),
   ],

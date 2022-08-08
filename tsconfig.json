@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "ES2022",
+    "moduleResolution": "Node",
     "types": ["tampermonkey"],
     "lib": ["dom", "esnext"],
     "skipLibCheck": true,
