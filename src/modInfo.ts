@@ -30,6 +30,7 @@ export const parseNexusMods = async () => {
   // filter out only mod entries on nexus
   const mods = Array.from(document.querySelectorAll<HTMLDivElement>(".mod-item")).filter((el) => !!el.querySelectorAll(`.mod-details > a[href^="https://www.nexusmods.com/"]`).length);
   mods.forEach(async (modElem) => {
+    const modName = modElem.querySelector<HTMLHeadingElement>(".av-special-heading-tag")?.innerText ?? "";
     const modLink = modElem.querySelector(`.mod-details > a[href^="https://www.nexusmods.com/"]`) as HTMLAnchorElement;
     const [gameId, modId] = modLink.href.split("?")[0]
       .replace("https://www.nexusmods.com/", "") // Remove the start of the link
@@ -39,7 +40,7 @@ export const parseNexusMods = async () => {
       
     const files = Array.from(modElem.querySelectorAll<HTMLSpanElement>("span.mod-file-item")).map(parseFileDescriptor);
 
-    const mod: Mod = { mod: modId, game: gameId, files };
+    const mod: Mod = { name: modName, mod: modId, game: gameId, files };
     const output = await Nexus_Mod(mod);
   });
 };

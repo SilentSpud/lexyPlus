@@ -13,7 +13,7 @@ const buildList = [
 export const Nexus_Mod = async (ModItem: Mod) => {
   let modInfo = await db.mods.get(ModItem.mod);
   if (!modInfo) {
-    if (buildList.includes(ModItem.name)) {
+    if (buildList.includes(ModItem?.name ?? "!NV@L!D CH@R@CT€R$")) {
       const newInfo = Nexus_Mod_Fetch(ModItem);
     }
   }
