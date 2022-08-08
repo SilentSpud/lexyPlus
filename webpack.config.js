@@ -24,7 +24,7 @@ const WebpackConfig = {
     filename: "[name].user.js",
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".jsx"],
+    extensions: [".ts", ".js"],
   },
   devServer: {
     static: {
@@ -59,7 +59,7 @@ const WebpackConfig = {
         ],
       }),
       proxyScript: {
-        baseUrl: "http://localhost:9080/"
+        "enable": false,
       },
     }),
   ],

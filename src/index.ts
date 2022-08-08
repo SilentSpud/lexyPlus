@@ -1,6 +1,8 @@
 import fetch from "./GM_fetch";
-import ShowAuthPrompt from "./AuthPrompt"
-import LexyPlusData from "./db";
+import AuthPrompt from "./AuthPrompt";
+import Validate from "./Validate";
+import DB from "./db";
+const db = new DB();
 
 // NXM Link: nxm://<GAME CODE>/mods/<MOD ID>/files/<FILE ID>
 
@@ -18,18 +20,28 @@ document.querySelectorAll("strong").forEach((el) => {
     selection.addRange(range);
   });
 });
+const init = async () => {
+  const isValid = await Validate();
+  if (isValid !== true) {
+    if (!(await AuthPrompt(isValid))) {
+      return;
+    }
+  }
 
-ShowAuthPrompt();
-const Data = new LexyPlusData();
-
-const APIKey = sessionStorage.getItem("lexyPlus/apiKey") as string;
-fetch("https://api.nexusmods.com/v1/users/validate.json", {
-  headers: {
-    APIKey,
-  },
-}).then(
-  (res) => console.log(res),
-  (err) => console.error(err)
-);
-
+  const APIKey = sessionStorage.getItem("nexus-api-key") as string;
+  fetch("https://api.nexusmods.com/v1/users/validate.json", {
+    headers: {
+      APIKey,
+    },
+  }).then(
+    (res) => console.log(res),
+    (err) => console.error(err)
+  );
+};
+const isDisabled = await db.settings.get("disable");
+if (isDisabled?.value === "true") {
+  console.warn("Lexy+ is disabled");
+} else {
+  init();
+}
 export default {};

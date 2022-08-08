@@ -1,8 +1,8 @@
-import Dexie, { Table } from 'dexie';
+import Dexie from 'dexie';
 
 export class LexyPlusData extends Dexie {
-  mods!: Table<Mod, number>;
-  settings!: Table<Settings, number>;
+  mods!: Dexie.Table<Mod, number>;
+  settings!: Dexie.Table<Settings, string>;
   
   constructor() {  
     super("LexyPlus");
