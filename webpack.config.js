@@ -15,7 +15,6 @@ const WebpackConfig = {
   },
   externals: {
     dexie: "Dexie",
-    "@violentmonkey/dom": "VM"
   },
   output: {
     path: outputPath,
@@ -30,7 +29,7 @@ const WebpackConfig = {
         test: /\.tsx?$/,
         exclude: /node_modules/,
         use: {
-          loader: "swc-loader"
+          loader: "swc-loader",
         },
       },
     ],
@@ -46,9 +45,8 @@ const WebpackConfig = {
         namespace: "LOTDPlus",
         grant: ["GM_xmlhttpRequest"],
         require: [
-          "https://unpkg.com/dexie@3.2.2/dist/dexie.min.js", // Dexie for database
-          "https://cdn.jsdelivr.net/npm/@violentmonkey/dom@2" // Violentmonkey DOM for React
-        ]
+          "https://unpkg.com/dexie@3.2.2/dist/dexie.min.js" // Dexie for database
+        ],
       }),
       proxyScript: {
         enable: false,

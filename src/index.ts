@@ -1,4 +1,8 @@
 import fetch from "./GM_fetch";
+import ShowAuthPrompt from "./AuthPrompt"
+import LexyPlusData from "./db";
+
+// NXM Link: nxm://<GAME CODE>/mods/<MOD ID>/files/<FILE ID>
 
 // Change the favicon link to use https (unless it's already fixed)
 document.querySelectorAll<HTMLLinkElement>(`link[rel~="icon"][href^="http:"]`).forEach((el) => {
@@ -14,6 +18,10 @@ document.querySelectorAll("strong").forEach((el) => {
     selection.addRange(range);
   });
 });
+
+ShowAuthPrompt();
+const Data = new LexyPlusData();
+
 const APIKey = sessionStorage.getItem("lexyPlus/apiKey") as string;
 fetch("https://api.nexusmods.com/v1/users/validate.json", {
   headers: {
