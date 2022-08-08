@@ -2,6 +2,7 @@ import fetch from "./GM_fetch";
 import AuthPrompt from "./AuthPrompt";
 import Validate from "./Validate";
 import DB from "./db";
+import { parseNexusMods } from "./modInfo";
 const db = new DB();
 
 // NXM Link: nxm://<GAME CODE>/mods/<MOD ID>/files/<FILE ID>
@@ -27,16 +28,7 @@ const init = async () => {
       return;
     }
   }
-
-  const APIKey = sessionStorage.getItem("nexus-api-key") as string;
-  fetch("https://api.nexusmods.com/v1/users/validate.json", {
-    headers: {
-      APIKey,
-    },
-  }).then(
-    (res) => console.log(res),
-    (err) => console.error(err)
-  );
+  parseNexusMods();
 };
 const isDisabled = await db.settings.get("disable");
 if (isDisabled?.value === "true") {

@@ -1,7 +1,7 @@
 {
   "name": "lotdplus",
   "displayName": "LOTD+",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Snazzy tweaks for Lexy's LOTD",
   "repository": "https://github.com/silentspud/LexyPlus",
   "author": "Silent Spud",
@@ -21,6 +21,7 @@
     "@swc/core": "^1.2.224",
     "cross-env": "^7.0.3",
     "dexie": "^3.2.2",
+    "semver-max": "^1.0.0",
     "swc-loader": "^0.2.3",
     "typescript": "^4.7.4",
     "webpack": "^5.74.0",

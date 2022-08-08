@@ -27,6 +27,7 @@ const AuthPrompt = (validateMsg: string) =>
         reject("User closed prompt");
       }
     });
+    // Yes button
     const yesBtn = document.createElement("button");
     yesBtn.classList.add("lotdplus-yes", "button");
     yesBtn.innerText = "Continue";
@@ -39,6 +40,7 @@ const AuthPrompt = (validateMsg: string) =>
       }
     });
     (prompt.querySelector("div.lotdplus-yesbox") as HTMLDivElement).appendChild(yesBtn);
+    // No button
     const noBtn = document.createElement("button");
     noBtn.style.cssText = "background-color: #ed3e3a; color: #ffffff; border-color: #b30012;";
     noBtn.classList.add("lotdplus-no", "button");
