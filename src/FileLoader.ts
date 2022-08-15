@@ -6,17 +6,22 @@ import { ModResponse } from "./@types/nexus";
 const db = new DB();
 db.open();
 
-const buildList = [
-  "OMEGA AIO Updated",
-]
+//const buildList = ["OMEGA Updated", "Teldryn Serious Patch"];
 
 export const Nexus_Mod = async (ModItem: Mod) => {
   let modInfo = await db.mods.get(ModItem.mod);
   if (!modInfo) {
-    if (buildList.includes(ModItem?.name ?? "!NV@L!D CH@R@CT€R$")) {
-      const newInfo = Nexus_Mod_Fetch(ModItem);
-    }
+    console.warn("Downloading Mod Data:", ModItem.mod);
+    modInfo = { ...ModItem };
+    //if (buildList.includes(ModItem?.name)) {
+    const newInfo = await Nexus_Mod_Fetch(ModItem);
+    modInfo.json = newInfo;
+    await db.mods.put(modInfo);
+    //}
+  } else {
+    console.log("Found mod in cache");
   }
+  //return Nexus_Mod_Parse(modInfo);
 };
 
 const Nexus_Mod_Fetch = async (mod: Mod) => {
@@ -24,42 +29,47 @@ const Nexus_Mod_Fetch = async (mod: Mod) => {
     headers: { APIKey: sessionStorage.getItem("nexus-api-key") as string },
   });
   const json = (await filesRaw.json()) as ModResponse;
-  mod.files.map(async (oldData) => {
+  return json.files;
+};
+
+const Nexus_Mod_Parse = async (mod: Mod) => {
+  const newFiles = mod.files.map((oldData) => {
     const fileData: File = {
       ...oldData,
     };
 
-    let matches = json.files
+    if (!mod.json) {
+      throw new Error("No json found");
+    }
+    let matches = mod.json
       .filter(({ category_id }) => category_id !== 6) // Filter deleted mods
       .filter((file) => file.name === fileData.name); // Filter by name
+    // If there's no version given, then find the highest version on nexus and use it
     if (oldData.version === "") {
-      const vers = matches
-        .map(({ version }) => {
-          console.log(fileData, version);
-          return version;
-        })
-        .reduce(semverMax);
+      const vers = matches.map(({ version }) => version);
+      const max = semverMax(...vers);
+      fileData.version = max;
     }
+    if (!fileData.version) console.error("No version found for", fileData.name);
+    matches = matches.filter((file) => file.version === fileData.version);
 
     if (matches.length > 1) {
-      const vers = matches
-        .map(({ version }) => {
-          return version;
-        })
-        .reduce(semverMax);
-      fileData.version = vers;
-      console.warn(fileData, matches, `Multiple matches for ${fileData.name}, calculated version ${vers}`);
-      matches = matches.filter((file) => file.version === vers);
+      console.warn(fileData, matches, `Multiple matches for ${fileData.name}`);
     }
     if (matches.length === 0) {
-      console.error(fileData, `No match for ${fileData.name} ${fileData.version}`);
+      console.error(fileData);
+      throw new Error(`No match for ${fileData.name} ${fileData.version}`);
     } else
       matches.forEach((file) => {
         if (file.category_id !== fileData.category) {
-          if (file.category_id == 4 || file.category_id == 7) return;
-          console.error(file, fileData, `Mismatch! Page says ${fileData.category} but API says ${file.category_id}`);
+          if (file.category_id == 4) return console.warn(`${fileData.name} is marked old now.`);
+          if (file.category_id == 7) return console.warn(`${fileData.name} is marked archived now.`);
+          console.warn(file, fileData, `Mismatch! Page says ${fileData.category} but API says ${file.category_id}`);
         }
         //console.log(file);
       });
+    return fileData;
   });
+  mod.files = newFiles;
+  return mod;
 };

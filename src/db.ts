@@ -1,4 +1,5 @@
 import Dexie from "dexie";
+import { ModResponse, FileData } from "./@types/nexus";
 
 export class LexyPlusData extends Dexie {
   mods!: Dexie.Table<Mod, number>;
@@ -7,8 +8,8 @@ export class LexyPlusData extends Dexie {
   constructor() {
     super("LexyPlus");
 
-    this.version(3).stores({
-      mods: "++mod, game, files",
+    this.version(1).stores({
+      mods: "++mod, name, game, files, json, data",
       settings: "++key, value",
     });
   }
@@ -19,8 +20,8 @@ export type Mod = {
   mod: number;
   game: string;
   files: File[];
-  //* transient property; not stored in database
-  data?: Record<any, any>;
+  json?: FileData[];
+  data?: ModResponse;
 }
 
 export type File = {

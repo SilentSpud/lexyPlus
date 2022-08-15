@@ -26,13 +26,6 @@ const WebpackConfig = {
   resolve: {
     extensions: [".ts", ".js"],
   },
-  devServer: {
-    static: {
-      directory: outputPath,
-    },
-    compress: true,
-    port: 9080,
-  },
   module: {
     rules: [
       {
@@ -55,7 +48,7 @@ const WebpackConfig = {
         namespace: "LOTDPlus",
         grant: ["GM_xmlhttpRequest"],
         require: [
-          "https://unpkg.com/dexie@3.2.2/dist/dexie.min.js" // Dexie for database
+          "https://unpkg.com/dexie@3.2.2/dist/dexie.min.js", // Dexie for database
         ],
       }),
       proxyScript: {

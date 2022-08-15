@@ -13,6 +13,7 @@ const AuthPrompt = (validateMsg: string) =>
         Your key's stored in your browser's session storage.<br />
         Any generated nxm links are stored in a local database, so they won't need to update until Lexy updates her guide.</p>
       <p>This script also has some QoL features for the site, so you can disable this and still use those features.</p>
+      
       <input type="text" placeholder="API Key" id="lotdplus-apikey" />
       <div class="lotdplus-nobox alternate_color" style="background-color: #00000000; float: left; "></div>
       <div class="lotdplus-yesbox alternate_color" style="background-color: #00000000; float: right;"></div>
