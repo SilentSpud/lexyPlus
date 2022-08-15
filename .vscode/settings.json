@@ -1,4 +1,5 @@
 {
   "liveServer.settings.port": 8080,
-  "liveServer.settings.root": "/build"
+  "liveServer.settings.root": "/build",
+  "liveServer.settings.donotShowInfoMsg": true,
 }
