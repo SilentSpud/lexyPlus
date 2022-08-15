@@ -11,16 +11,13 @@ db.open();
 export const Nexus_Mod = async (ModItem: Mod) => {
   let modInfo = await db.mods.get(ModItem.mod);
   if (!modInfo) {
-    console.warn("Downloading Mod Data:", ModItem.mod);
     modInfo = { ...ModItem };
     //if (buildList.includes(ModItem?.name)) {
     const newInfo = await Nexus_Mod_Fetch(ModItem);
     modInfo.json = newInfo;
     await db.mods.put(modInfo);
     //}
-  } else {
-    console.log("Found mod in cache");
-  }
+  } 
   //return Nexus_Mod_Parse(modInfo);
 };
 

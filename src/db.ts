@@ -20,7 +20,7 @@ export type Mod = {
   mod: number;
   game: string;
   files: File[];
-  json?: FileData[];
+  json: FileData[];
   data?: ModResponse;
 }
 
