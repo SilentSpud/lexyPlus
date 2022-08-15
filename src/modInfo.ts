@@ -1,5 +1,5 @@
 import { File, Mod } from "./db";
-import { Nexus_Mod } from "./FileLoader";
+import { NexusMod } from "./FileLoader";
 
 const parseFileDescriptor = (fileDescriptor: HTMLSpanElement): File => {
   const fileDesc = fileDescriptor.cloneNode(true) as HTMLSpanElement;
@@ -41,6 +41,6 @@ export const parseNexusMods = async () => {
     const files = Array.from(modElem.querySelectorAll<HTMLSpanElement>("span.mod-file-item")).map(parseFileDescriptor);
 
     const mod: Mod = { name: modName, mod: modId, game: gameId, files };
-    const output = await Nexus_Mod(mod);
+    const output = await NexusMod(mod);
   });
 };

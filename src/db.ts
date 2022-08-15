@@ -15,8 +15,7 @@ export class LexyPlusData extends Dexie {
   }
 }
 export type Mod = {
-  // TODO: implement name
-  name?: string;
+  name: string;
   mod: number;
   game: string;
   files: File[];
