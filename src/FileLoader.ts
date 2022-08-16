@@ -6,10 +6,7 @@ import { ModResponse } from "./@types/nexus";
 const db = new DB();
 db.open();
 
-const filters = [
-  "Better Combat Escape - SSE",
-  "Sovngarde - A Nordic Font",
-]
+const filters = ["Better Combat Escape - SSE", "Sovngarde - A Nordic Font"];
 
 export const NexusMod = async (ModItem: Mod) => {
   let modInfo = await db.mods.get(ModItem.mod);

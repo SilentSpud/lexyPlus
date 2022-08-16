@@ -26,6 +26,16 @@ const WebpackConfig = {
   resolve: {
     extensions: [".ts", ".js"],
   },
+  // Disable all of webpack-dev-server's refresh features. We use the script manager to do this
+  devServer: {
+    static: {
+      directory: outputPath,
+    },
+    compress: true,
+    port: 8080,
+    webSocketServer: false,
+    open: ["/lexy.user.js"],
+  },
   module: {
     rules: [
       {
@@ -52,7 +62,7 @@ const WebpackConfig = {
         ],
       }),
       proxyScript: {
-        "enable": false,
+        enable: false,
       },
     }),
   ],
