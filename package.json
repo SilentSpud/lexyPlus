@@ -21,6 +21,7 @@
     "@swc/core": "^1.2.233",
     "cross-env": "^7.0.3",
     "dexie": "^3.2.2",
+    "fastest-levenshtein": "^1.0.16",
     "semver": "^7.3.7",
     "semver-max": "^1.0.0",
     "swc-loader": "^0.2.3",

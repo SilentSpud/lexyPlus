@@ -1,13 +1,14 @@
 import fetch from "./GM_fetch";
 //@ts-ignore
 import semverMax from "semver-max";
-import DB, { FileInfo, Mod } from "./db";
+import { distance } from "fastest-levenshtein";
 import type { ModResponse } from "./@types/nexus";
 import type { ModBox } from "./@types/lexy";
+import DB, { FileInfo, Mod } from "./db";
 
 const db = new DB();
 
-const filters: string[] = [];
+const filters: string[] = ["CritterSpawn Congestion Fix"];
 //const filters = ["Better Combat Escape - SSE", "Sovngarde - A Nordic Font"];
 
 export const NexusMod = async (ModItem: Mod | ModBox) => {
@@ -46,7 +47,7 @@ const NexusMod_Parse = async (mod: Mod, ModVersion?: string) =>
     try {
       let matches = mod.json
         .filter(({ category_id }) => category_id !== 6) // Filter out deleted mods
-        .filter((file) => file.name.toLowerCase() === fileData.name.toLowerCase()); // Filter by name
+        .filter((file) => distance(file.name.toLowerCase(), fileData.name.toLowerCase()) < 10); // Filter by name
 
       if (!NexusFileData.version && ModVersion) {
         console.log(`${mod.name} has no version, but has version ${ModVersion} in the modbox. Trying it`);
