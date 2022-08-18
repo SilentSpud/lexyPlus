@@ -1,27 +1,28 @@
 import fetch from "./GM_fetch";
 //@ts-ignore
 import semverMax from "semver-max";
-import DB, { File, Mod } from "./db";
-import { ModResponse } from "./@types/nexus";
+import DB, { FileInfo, Mod } from "./db";
+import type { ModResponse } from "./@types/nexus";
+import type { ModBox } from "./@types/lexy";
+
 const db = new DB();
-db.open();
 
-const filters = ["Better Combat Escape - SSE", "Sovngarde - A Nordic Font"];
+const filters: string[] = [];
+//const filters = ["Better Combat Escape - SSE", "Sovngarde - A Nordic Font"];
 
-export const NexusMod = async (ModItem: Mod) => {
+export const NexusMod = async (ModItem: Mod | ModBox) => {
   let modInfo = await db.mods.get(ModItem.mod);
-
-  // If we don't have the mod or it's json, fetch it
   if (!modInfo || !modInfo.json) {
-    modInfo = { ...ModItem };
-    const newInfo = await NexusMod_Fetch(ModItem);
+    // If we don't have the mod or it's json, fetch it
+    modInfo = { ...ModItem } as Mod;
+    const newInfo = await NexusMod_Fetch(modInfo);
     modInfo.json = newInfo;
     await db.mods.put(modInfo);
   }
 
   // if any file doesn't have an id or a version, then we need to parse the json
-  if (!!modInfo.files.filter(({ id, version }) => !id || !version).length && filters.includes(modInfo.name)) {
-    const newFiles = await NexusMod_Parse(modInfo);
+  if (!!modInfo.files.filter(({ id, version }) => !id || !version).length && (filters.length > 0 ? filters.includes(modInfo.name) : true)) {
+    const newFiles = await NexusMod_Parse(modInfo, ModItem.version);
     modInfo.files = newFiles;
     await db.mods.put(modInfo);
   }
@@ -36,21 +37,30 @@ const NexusMod_Fetch = async (mod: Mod) => {
   return json.files;
 };
 
-const NexusMod_Parse = async (mod: Mod) =>
-  mod.files.map((oldData) => {
-    const fileData: File = {
-      ...oldData,
+const NexusMod_Parse = async (mod: Mod, ModVersion?: string) =>
+  mod.files.map((NexusFileData) => {
+    const fileData: FileInfo = {
+      ...NexusFileData,
     };
-    const hasVersion = oldData.version !== "";
+    const hasVersion = NexusFileData.version !== "";
     try {
       let matches = mod.json
         .filter(({ category_id }) => category_id !== 6) // Filter out deleted mods
-        .filter((file) => file.name === fileData.name); // Filter by name
+        .filter((file) => file.name.toLowerCase() === fileData.name.toLowerCase()); // Filter by name
+
+      if (!NexusFileData.version && ModVersion) {
+        console.log(`${mod.name} has no version, but has version ${ModVersion} in the modbox. Trying it`);
+        fileData.version = ModVersion;
+      }
 
       // If there's no version given, then find the highest version on nexus and use it
-      if (oldData.version === "") {
+      if (!fileData.version) {
         const vers = matches.map(({ version }) => version);
-        const max = semverMax(...vers);
+        if (vers.length === 0) {
+          console.error(`No version found for ${fileData.name}`, fileData);
+          throw new Error(`No version found for ${fileData.name}`);
+        }
+        const max = vers.length === 1 ? vers[0] : semverMax(...vers);
         console.log(`${fileData.name} has no version, using ${max}`);
         fileData.version = max;
       }

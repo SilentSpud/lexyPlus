@@ -10,6 +10,7 @@ const basePath = process.env.BASE_PATH;
 /** @type { import('webpack').Configuration } */
 const WebpackConfig = {
   mode: dev ? "development" : "production",
+  devtool: dev ? "inline-source-map" : false,
   entry: {
     lexy: "./src/index.ts",
   },

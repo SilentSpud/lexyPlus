@@ -15,20 +15,30 @@ export class LexyPlusData extends Dexie {
   }
 }
 export type Mod = {
+  //* Mod name
   name: string;
+  //* Nexus mod ID
   mod: number;
+  //* Nexus game code
   game: string;
-  files: File[];
+  //* Nexus version
+  version?: string;
+  //* Nexus API files
+  files: FileInfo[];
+  //* Nexus API response. Temporary
   json: FileData[];
-  data?: ModResponse;
-}
+};
 
-export type File = {
+export type FileInfo = {
+  //* Nexus file ID
   id?: number;
+  //* Nexus file name
   name: string;
+  //* Nexus version
   version: string;
+  //* Nexus category ID
   category: 1 | 2 | 3 | 4 | 5 | undefined;
-}
+};
 export interface Settings {
   key: string;
   value: string;
