@@ -55,10 +55,9 @@ export const parseNexusMods = async () => {
 
     modElem.querySelectorAll<HTMLImageElement>('img[src^="https://img.shields.io/badge/Version-"]').forEach((el) => {
       const ver = VersionRegex.exec(el.src);
-      console.log(`Found version for ${modName}`, ver);
       if (ver) mod.version = ver[1];
     });
-    console.log(mod);
-    const modData = await NexusMod(mod);
+
+    NexusMod(mod);
   });
 };

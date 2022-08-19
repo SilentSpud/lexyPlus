@@ -8,8 +8,7 @@ import DB, { FileInfo, Mod } from "./db";
 
 const db = new DB();
 
-export const modFilters: string[] = ["Map Markers Complete with DLC and OCS"];
-//const filters = ["Better Combat Escape - SSE", "Sovngarde - A Nordic Font"];
+export const modFilters: string[] = ["Sovngarde - A Nordic Font"];
 
 export const NexusMod = async (modItem: Mod | ModBox) => {
   let modInfo = await db.mods.get(modItem.mod);
@@ -80,6 +79,10 @@ const NexusMod_Parse = async (mod: Mod, ModVersion?: string) =>
         if (newMatches.length === 1) {
           matches = newMatches;
         }
+        if (matches.length > 1) {
+          console.warn(fileData, matches, `Multiple matches for ${fileData.name}`);
+          throw new Error(`Multiple matches for ${fileData.name}`);
+        }
       }
       if (matches.length === 0) {
         console.warn(`No match for ${fileData.name} at version ${fileData.version}`, fileData);
@@ -97,7 +100,6 @@ const NexusMod_Parse = async (mod: Mod, ModVersion?: string) =>
         });
       return fileData;
     } catch (e: any) {
-      console.warn("Current data", fileData);
       throw new Error(`Mod "${mod.name}" has an error: "${e.toString()}". This mod ${hasVersion ? "did" : "didn't"} have a version.`);
     }
   });
