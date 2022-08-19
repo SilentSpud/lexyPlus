@@ -8,22 +8,23 @@ import DB, { FileInfo, Mod } from "./db";
 
 const db = new DB();
 
-const filters: string[] = ["CritterSpawn Congestion Fix"];
+export const modFilters: string[] = ["Map Markers Complete with DLC and OCS"];
 //const filters = ["Better Combat Escape - SSE", "Sovngarde - A Nordic Font"];
 
-export const NexusMod = async (ModItem: Mod | ModBox) => {
-  let modInfo = await db.mods.get(ModItem.mod);
+export const NexusMod = async (modItem: Mod | ModBox) => {
+  let modInfo = await db.mods.get(modItem.mod);
   if (!modInfo || !modInfo.json) {
     // If we don't have the mod or it's json, fetch it
-    modInfo = { ...ModItem } as Mod;
+    modInfo = { ...modItem } as Mod;
     const newInfo = await NexusMod_Fetch(modInfo);
     modInfo.json = newInfo;
     await db.mods.put(modInfo);
   }
 
   // if any file doesn't have an id or a version, then we need to parse the json
-  if (!!modInfo.files.filter(({ id, version }) => !id || !version).length && (filters.length > 0 ? filters.includes(modInfo.name) : true)) {
-    const newFiles = await NexusMod_Parse(modInfo, ModItem.version);
+  if (!!modInfo.files.filter(({ id, version }) => !id || !version).length) {
+    console.log(`File ${modInfo.name} ${modItem.version ? "does" : "doesn't"} have a version`);
+    const newFiles = await NexusMod_Parse(modInfo, modItem.version);
     modInfo.files = newFiles;
     await db.mods.put(modInfo);
   }
@@ -58,7 +59,7 @@ const NexusMod_Parse = async (mod: Mod, ModVersion?: string) =>
       if (!fileData.version) {
         const vers = matches.map(({ version }) => version);
         if (vers.length === 0) {
-          console.error(`No version found for ${fileData.name}`, fileData);
+          console.warn(`No version found for ${fileData.name}`, fileData);
           throw new Error(`No version found for ${fileData.name}`);
         }
         const max = vers.length === 1 ? vers[0] : semverMax(...vers);
@@ -73,16 +74,22 @@ const NexusMod_Parse = async (mod: Mod, ModVersion?: string) =>
 
       if (matches.length > 1) {
         console.warn(fileData, matches, `Multiple matches for ${fileData.name}`);
+
+        // Since we do fuzzy matching, try checking for a perfect match
+        const newMatches = matches.filter((file) => file.name === fileData.name);
+        if (newMatches.length === 1) {
+          matches = newMatches;
+        }
       }
       if (matches.length === 0) {
-        console.error(fileData);
+        console.warn(`No match for ${fileData.name} at version ${fileData.version}`, fileData);
         throw new Error(`No match for ${fileData.name} ${fileData.version}`);
       } else
         matches.forEach((file) => {
           // just return these until i decide what to do
           if (file.category_id !== fileData.category) {
-            if (file.category_id == 4) return console.warn(`${fileData.name} is marked old now.`);
-            if (file.category_id == 7) return console.warn(`${fileData.name} is marked archived now.`);
+            if (file.category_id == 4) console.warn(`${fileData.name} is marked old now.`);
+            if (file.category_id == 7) console.warn(`${fileData.name} is marked archived now.`);
             console.warn(file, fileData, `Mismatch! Page says ${fileData.category} but API says ${file.category_id}`);
           }
           fileData.id = file.file_id;
@@ -90,7 +97,7 @@ const NexusMod_Parse = async (mod: Mod, ModVersion?: string) =>
         });
       return fileData;
     } catch (e: any) {
-      console.error("Current data", fileData);
+      console.warn("Current data", fileData);
       throw new Error(`Mod "${mod.name}" has an error: "${e.toString()}". This mod ${hasVersion ? "did" : "didn't"} have a version.`);
     }
   });

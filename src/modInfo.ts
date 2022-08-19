@@ -1,6 +1,6 @@
 import { ModBox } from "./@types/lexy";
 import { FileInfo } from "./db";
-import { NexusMod } from "./FileLoader";
+import { modFilters, NexusMod } from "./FileLoader";
 
 const VersionRegex = new RegExp("https://img\\.shields\\.io/badge/Version-(.*)-informational\\.svg", "gi");
 
@@ -36,6 +36,9 @@ export const parseNexusMods = async () => {
   mods.forEach(async (modElem) => {
     // get the mod name
     const modName = modElem.querySelector<HTMLHeadingElement>(".av-special-heading-tag")?.innerText ?? "";
+    // if the filter list has mods, check it
+    if (modFilters.length > 0 && !modFilters.includes(modName)) return;
+
     // get the nexus link and break it down to the mod id and game id
     const modLink = modElem.querySelector(`.mod-details > a[href^="https://www.nexusmods.com/"]`) as HTMLAnchorElement;
     const [gameId, modId] = modLink.href
@@ -52,8 +55,10 @@ export const parseNexusMods = async () => {
 
     modElem.querySelectorAll<HTMLImageElement>('img[src^="https://img.shields.io/badge/Version-"]').forEach((el) => {
       const ver = VersionRegex.exec(el.src);
+      console.log(`Found version for ${modName}`, ver);
       if (ver) mod.version = ver[1];
     });
-    const output = await NexusMod(mod);
+    console.log(mod);
+    const modData = await NexusMod(mod);
   });
 };

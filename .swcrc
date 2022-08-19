@@ -4,12 +4,6 @@
     "parser": {
       "syntax": "typescript"
     },
-    "target": "es2018",
-    "transform": {
-      "react": {
-        "pragma": "VM.createElement",
-        "pragmaFrag": "VM.Fragment"
-      }
-    }
+    "target": "es2018"
   }
 }
