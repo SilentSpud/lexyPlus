@@ -2,7 +2,8 @@ import { ModBox } from "./@types/lexy";
 import { FileInfo } from "./db";
 import { modFilters, NexusMod } from "./FileLoader";
 
-const VersionRegex = new RegExp("https://img\\.shields\\.io/badge/Version-(.*)-informational\\.svg", "gi");
+const VersionRegex = new RegExp("https://img\\.shields\\.io/badge/Version-(.*)-informational\\.svg", "i");
+const NexusRegex = new RegExp("https://www\\.nexusmods\\.com/(.*)/mods/(.*)(\\?.*)?", "i");
 
 const parseFileDescriptor = (fileDescriptor: HTMLSpanElement): FileInfo => {
   const fileDesc = fileDescriptor.cloneNode(true) as HTMLSpanElement;
@@ -25,8 +26,8 @@ const parseFileDescriptor = (fileDescriptor: HTMLSpanElement): FileInfo => {
     }
   })(fileDesc.querySelector<HTMLSpanElement>(".mod-file-item-category")?.innerText ?? "");
   const name = fileDesc.querySelector<HTMLSpanElement>(".mod-file-item-name")?.innerText ?? "A file";
-  const version = fileDesc.querySelector<HTMLSpanElement>(".mod-file-item-version")?.innerText ?? "";
-  return { name, version, category };
+  const version = fileDesc.querySelector<HTMLSpanElement>(".mod-file-item-version")?.innerText.trim() ?? "";
+  return { name, version };
 };
 
 export const parseNexusMods = async () => {
@@ -41,17 +42,15 @@ export const parseNexusMods = async () => {
 
     // get the nexus link and break it down to the mod id and game id
     const modLink = modElem.querySelector(`.mod-details > a[href^="https://www.nexusmods.com/"]`) as HTMLAnchorElement;
-    const [gameId, modId] = modLink.href
-      .split("?")[0]
-      .replace("https://www.nexusmods.com/", "") // Remove the start of the link
-      .replace("/mods", "") // and the middle
-      .split("/") // split the remainder into the game and mod id
-      .map((s) => parseInt(s) || String(s).toString()) as [string, number]; // parse the mod id as number and the game id as string
+
+    const linkData = NexusRegex.exec(modLink.href);
+    if (!linkData) throw new Error("Invalid Nexus Link");
+    const [_, gameId, modId] = linkData;
 
     // parse the files into something more searchable
     const files = Array.from(modElem.querySelectorAll<HTMLSpanElement>("span.mod-file-item")).map(parseFileDescriptor);
 
-    const mod: ModBox = { name: modName, mod: modId, game: gameId, files };
+    const mod: ModBox = { name: modName, mod: parseInt(modId), game: gameId, files };
 
     modElem.querySelectorAll<HTMLImageElement>('img[src^="https://img.shields.io/badge/Version-"]').forEach((el) => {
       const ver = VersionRegex.exec(el.src);

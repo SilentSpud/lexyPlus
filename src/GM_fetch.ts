@@ -1,6 +1,5 @@
 /**
  * fetch polyfill utilizing GM_xmlhttpRequest to bypass CORS issues
- * @bug new Response() doesn't allow for setting URLs, so don't rely on the response.url property
  *
  * @param {(RequestInfo | URL)} url
  * @param {(RequestInit | undefined)} [options]
@@ -22,19 +21,20 @@ export const GM_fetch = async (url: RequestInfo | URL, options?: RequestInit | u
         Accept: "application/json",
       },
       // Create a Response object from the GM_xmlhttpRequest response
-      onload: (res) =>
-        resolve(
-          new Response(res.response, {
-            status: res.status ?? 200,
-            statusText: res.statusText ?? "OK",
-            headers: Object.fromEntries(
-              res.responseHeaders
-                .trim()
-                .split("\n")
-                .map((line) => line.split(": "))
-            ),
-          })
-        ),
+      onload: (res) => {
+        const response = new Response(res.response, {
+          status: res.status ?? 200,
+          statusText: res.statusText ?? "OK",
+          headers: Object.fromEntries(
+            res.responseHeaders
+              .trim()
+              .split("\n")
+              .map((line) => line.split(": "))
+          ),
+        });
+        Object.defineProperty(response, "url", { value: url.toString() });
+        resolve(response);
+      },
       onerror: (res) => reject(res),
     };
 

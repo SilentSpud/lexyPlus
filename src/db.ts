@@ -1,5 +1,5 @@
+import { IFileInfo } from "@nexusmods/nexus-api/lib/types";
 import Dexie from "dexie";
-import { ModResponse, FileData } from "./@types/nexus";
 
 export class LexyPlusData extends Dexie {
   mods!: Dexie.Table<Mod, number>;
@@ -26,7 +26,7 @@ export type Mod = {
   //* Nexus API files
   files: FileInfo[];
   //* Nexus API response. Temporary
-  json: FileData[];
+  json: IFileInfo[];
 };
 
 export type FileInfo = {
@@ -36,8 +36,6 @@ export type FileInfo = {
   name: string;
   //* Nexus version
   version: string;
-  //* Nexus category ID
-  category: 1 | 2 | 3 | 4 | 5 | undefined;
 };
 export interface Settings {
   key: string;

@@ -59,9 +59,10 @@ const WebpackConfig = {
         namespace: "LOTDPlus",
         grant: ["GM_xmlhttpRequest"],
         require: [
-          "https://unpkg.com/dexie@3.2.2/dist/dexie.min.js", // Dexie for database
+          "https://cdnjs.cloudflare.com/ajax/libs/dexie/3.2.2/dexie.min.js", // Dexie for database
         ],
       }),
+      metajs: false,
       proxyScript: {
         enable: false,
       },

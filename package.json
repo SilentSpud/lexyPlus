@@ -8,37 +8,33 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "webpack serve",
+    "serve": "webpack serve",
     "dev": "webpack build --watch",
     "build": "cross-env NODE_ENV=production webpack",
-    "lint": "eslint",
-    "postlint": "cross-env prettier --ignore-path .eslintignore --no-error-on-unmatched-pattern --list-different '**/*.{js,jsx,ts,tsx,json,html,css,less,scss,yml}'",
-    "lint:fix": "eslint --fix",
-    "postlint:fix": "cross-env prettier --ignore-path .eslintignore --write '**/*.{js,jsx,ts,tsx,json,html,css,less,scss,yml}'",
+    "lint": "eslint --fix",
+    "postlint": "cross-env prettier --ignore-path .eslintignore --write '**/*.{js,ts,json}'",
     "clean": "rimraf build node_modules bun.lockb"
   },
   "dependencies": {
-    "@swc/core": "^1.2.245",
-    "cross-env": "^7.0.3",
     "dexie": "^3.2.2",
-    "fastest-levenshtein": "^1.0.16",
-    "semver": "^7.3.7",
-    "semver-max": "^1.0.0",
-    "swc-loader": "^0.2.3",
-    "typescript": "^4.8.2"
+    "semver": "^7.3.7"
   },
   "devDependencies": {
     "@nexusmods/nexus-api": "^1.1.5",
+    "@swc/core": "^1.3.0",
     "@types/semver": "^7.3.12",
     "@types/tampermonkey": "^4.0.5",
-    "@typescript-eslint/eslint-plugin": "^5.36.1",
-    "@typescript-eslint/parser": "^5.36.1",
-    "eslint": "^8.23.0",
+    "@typescript-eslint/eslint-plugin": "^5.36.2",
+    "@typescript-eslint/parser": "^5.36.2",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.23.1",
     "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
+    "swc-loader": "^0.2.3",
+    "typescript": "^4.8.3",
     "webpack": "^5.74.0",
     "webpack-cli": "^4.10.0",
-    "webpack-dev-server": "^4.10.1",
+    "webpack-dev-server": "^4.11.0",
     "webpack-userscript": "^2.5.8"
   }
 }
