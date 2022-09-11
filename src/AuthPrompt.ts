@@ -11,8 +11,7 @@ const AuthPrompt = (validateMsg: string) =>
       <p style="margin-top: 0;">Validator failed with message: ${validateMsg}</p>
       <p>Lexy+ queries the Nexus Mods API to attempt to create nxm links for all mods on the page. This requires your <a href="https://www.nexusmods.com/users/myaccount?tab=api#personal_key" rel="noopener noreferrer" target="_blank">Nexus Mods API key</a><br />
         Your key's stored in your browser's session storage.<br />
-        Any generated nxm links are stored in a local database, so they won't need to update until Lexy updates her guide.</p>
-      <p>This script also has some QoL features for the site, so you can disable this and still use those features.</p>
+        Information is only stored locally.</p>
       
       <input type="text" placeholder="API Key" id="lotdplus-apikey" />
       <div class="lotdplus-nobox alternate_color" style="background-color: #00000000; float: left; "></div>
