@@ -6,8 +6,8 @@ import coerce from "semver/functions/coerce";
 
 const db = new DB();
 
-//export const modFilters: string[] = [""];
 export const modFilters: string[] = [];
+//export const modFilters: string[] = [""];
 
 // Map of mods that have typos
 const ModTypoFixes = new Map([
@@ -18,6 +18,12 @@ const ModTypoFixes = new Map([
   ["NO STARS Texture Overhaul Sky Collection Stars of Nirn (Mid Fantasy) No Stars By CKW25", "NO STARS Texture Overhaul Sky Collection Stars of Nirn (Mid Fantasy) No Stars By CKW25s"],
 ]);
 
+// Map of versions that have typos
+const VersionTypoFixes = new Map([
+  // ["Lexy File Name", "New Version"],
+  // Nexus has 3.20 instead of 3.2
+  ["Better FaceLight and Conversation Redux", "3.20"],
+]);
 const versionRegex = /v?(\d+(\.(\d|[ab])+)+)/;
 
 export const NexusMod = async (modItem: Mod | ModBox) => {
@@ -49,12 +55,13 @@ const NexusMod_Fetch = async (mod: Mod) => {
 
 const NexusMod_Handler = async (mod: Mod, ModVersion?: string) =>
   mod.files.map((NexusFileData) => {
+    // If we already have the id, move on
     if (NexusFileData?.id) return NexusFileData;
     const fileData: FileInfo = {
       ...NexusFileData,
     };
-    // If it doesn't have a version, make a note and add it if we can
-    if (NexusFileData.version && ModVersion) {
+    // If it doesn't have a version, add it if we can
+    if (!NexusFileData.version && ModVersion) {
       fileData.version = ModVersion;
     }
     // If there's no version still, something is horribly wrong
@@ -90,6 +97,11 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
   else if (nameMatches.length > 1) {
     // If there's more than 1, try filtering by version.
     for (const match of nameMatches) if (match.version == file.version) return match;
+    // check if the file's in the version typo list, and if so, test that version instead
+    if (VersionTypoFixes.has(file.name)) {
+      const fixedVersion = VersionTypoFixes.get(file.name);
+      for (const match of nameMatches) if (match.version == fixedVersion) return match;
+    }
   }
 
   // Look for a matching semver
