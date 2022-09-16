@@ -13,12 +13,14 @@ jobs:
         with:
           cache: true
 
-      - name: Run script
-        run: bun index.js
+      - name: Install dependencies
+        run: bun install
 
-      - name: Create Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build userscript
         run: |
-          bun install
-          yarn build
+          bun run build
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/lexy.user.js
