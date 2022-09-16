@@ -70,11 +70,8 @@ const NexusMod_Handler = async (mod: Mod, ModVersion?: string) =>
     if (!fileData.version) {
       log("No version", mod, fileData);
     }
-
-    const data = NexusMod_Parse(mod, fileData);
-
-    fileData.id = data.file_id;
-
+    const { file_id } = NexusMod_Parse(mod, fileData);
+    fileData.id = file_id;
     return fileData;
   });
 

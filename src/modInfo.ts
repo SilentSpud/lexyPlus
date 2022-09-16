@@ -53,8 +53,8 @@ export const parseNexusMods = async () => {
     const mod: ModBox = { name: modName, mod: parseInt(modId), game: gameId, files };
 
     modElem.querySelectorAll<HTMLImageElement>('img[src^="https://img.shields.io/badge/Version-"]').forEach((el) => {
-      const ver = VersionRegex.exec(el.src);
-      if (ver) mod.version = ver[1];
+      const verVal = VersionRegex.exec(el.src);
+      if (verVal) mod.version = decodeURIComponent(verVal[1]).trim();
     });
 
     NexusMod(mod);
