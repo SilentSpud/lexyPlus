@@ -1,4 +1,3 @@
-import fetch from "./GM_fetch";
 import AuthPrompt from "./AuthPrompt";
 import Validate from "./Validate";
 import DB from "./db";

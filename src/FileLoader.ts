@@ -49,6 +49,7 @@ const NexusMod_Fetch = async (mod: Mod) => {
 
 const NexusMod_Handler = async (mod: Mod, ModVersion?: string) =>
   mod.files.map((NexusFileData) => {
+    if (NexusFileData?.id) return NexusFileData;
     const fileData: FileInfo = {
       ...NexusFileData,
     };
@@ -57,7 +58,13 @@ const NexusMod_Handler = async (mod: Mod, ModVersion?: string) =>
       fileData.version = ModVersion;
     }
     // If there's no version still, something is horribly wrong
-    if (!fileData.version) throw new Error(`No version found for ${fileData.name}`);
+    if (!fileData.version) {
+      console.groupCollapsed(`No version: ${fileData.name}`);
+      console.log(`Mod:`, mod);
+      console.log(`File:`, fileData);
+      console.groupEnd();
+      throw new Error(`No version found for ${fileData.name}`);
+    }
 
     const data = NexusMod_Parse(mod, fileData);
 
@@ -73,6 +80,8 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
   else if (versionMatches.length > 1) {
     // If there's more than 1, try filtering by name.
     for (const match of versionMatches) if (match.name == file.name) return match;
+    // Add the version to the name. Fixes "Riften Docks Overhaul"
+    for (const match of versionMatches) if (match.name == `${file.name} ${file.version}`) return match;
   }
 
   // Look for a matching name
