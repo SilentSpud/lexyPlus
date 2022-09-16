@@ -23,6 +23,8 @@ const VersionTypoFixes = new Map([
   // ["Lexy File Name", "New Version"],
   // Nexus has 3.20 instead of 3.2
   ["Better FaceLight and Conversation Redux", "3.20"],
+  // Lexy has 3.20 instead of 3.2
+  ["2. Majestic Mountains Darkside", "3.2"],
 ]);
 const versionRegex = /((\s-\s)?v?(\d+(\.(\d|[ab])+)+))/;
 
@@ -81,13 +83,13 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
   if (versionMatches.length == 1) return versionMatches[0];
   else if (versionMatches.length > 1) {
     // If there's more than 1, try filtering by name.
-    for (const match of versionMatches) if (match.name == file.name) return match;
+    for (const match of versionMatches) if (match.name.toLowerCase() == file.name.toLowerCase()) return match;
     // Add the version to the name. Fixes "Riften Docks Overhaul"
     for (const match of versionMatches) if (match.name == `${file.name} ${file.version}`) return match;
   }
 
   // Look for a matching name
-  const nameMatches = mod.json.filter((modFile) => modFile.name == file.name).filter(removeDeleted);
+  const nameMatches = mod.json.filter((modFile) => modFile.name.toLowerCase() == file.name.toLowerCase()).filter(removeDeleted);
   if (nameMatches.length == 1) return nameMatches[0];
   else if (nameMatches.length > 1) {
     // If there's more than 1, try filtering by version.
