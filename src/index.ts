@@ -6,7 +6,7 @@ const db = new DB();
 
 // NXM Link: nxm://<GAME CODE>/mods/<MOD ID>/files/<FILE ID>
 console.clear();
-console.log("Starting Lexy+");
+console.info("%cStarting Lexy+", "font-style: italic;");
 
 // Change the favicon link to use https (unless it's already fixed)
 document.querySelectorAll<HTMLLinkElement>(`link[rel~="icon"][href^="http:"]`).forEach((el) => {

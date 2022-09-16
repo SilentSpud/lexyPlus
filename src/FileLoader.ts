@@ -1,5 +1,5 @@
 import fetch from "./GM_fetch";
-import { IModFiles } from "@nexusmods/nexus-api/lib/types";
+import { IFileInfo, IModFiles } from "@nexusmods/nexus-api/lib/types";
 import { ModBox } from "./@types/lexy";
 import DB, { FileInfo, Mod } from "./db";
 import coerce from "semver/functions/coerce";
@@ -7,7 +7,7 @@ import coerce from "semver/functions/coerce";
 const db = new DB();
 
 export const modFilters: string[] = [];
-//export const modFilters: string[] = [""];
+//export const modFilters: string[] = [``];
 
 // Map of mods that have typos
 const ModTypoFixes = new Map([
@@ -17,14 +17,15 @@ const ModTypoFixes = new Map([
   // Extra s at the end on lexy side
   ["NO STARS Texture Overhaul Sky Collection Stars of Nirn (Mid Fantasy) No Stars By CKW25", "NO STARS Texture Overhaul Sky Collection Stars of Nirn (Mid Fantasy) No Stars By CKW25s"],
 ]);
-
 // Map of versions that have typos
 const VersionTypoFixes = new Map([
   // ["Lexy File Name", "New Version"],
   // Nexus has 3.20 instead of 3.2
   ["Better FaceLight and Conversation Redux", "3.20"],
 ]);
-const versionRegex = /v?(\d+(\.(\d|[ab])+)+)/;
+const versionRegex = /((\s-\s)?v?(\d+(\.(\d|[ab])+)+))/;
+
+const removeDeleted = (file: IFileInfo) => file.category_id !== 6;
 
 export const NexusMod = async (modItem: Mod | ModBox) => {
   let modInfo = await db.mods.get(modItem.mod);
@@ -115,16 +116,25 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
   // Test for files wrongly formatted with the version in the name
   if (versionRegex.test(file.name)) {
     const fileVersion = versionRegex.exec(file.name) as RegExpExecArray;
-    const versionMatches = mod.json.filter((modFile) => modFile.version.match(fileVersion[1]));
+    const regexMatches = mod.json.filter((modFile) => coerce(modFile.version)?.raw == coerce(fileVersion[3])?.raw);
     // remove the version from the name
-    const fileName = file.name.replace(versionRegex, "").trim();
-    const nameMatches = versionMatches.filter((modFile) => modFile.name == fileName);
+    const fileName = file.name.replace(fileVersion[0], "").trim();
+    const nameMatches = regexMatches.filter((modFile) => modFile.name == fileName).filter(removeDeleted);
     if (nameMatches.length == 1) return nameMatches[0];
   }
 
   // Typo fixes
-  const TypoList = mod.json.filter((modFile) => ModTypoFixes.has(modFile.name) && ModTypoFixes.get(modFile.name) == file.name);
+  const TypoList = mod.json.filter((modFile) => {
+    if (ModTypoFixes.has(modFile.name)) {
+      const fixedName = ModTypoFixes.get(modFile.name);
+      return fixedName == file.name;
+    }
+  });
   if (TypoList.length == 1) return TypoList[0];
+  else if (TypoList.length > 1) {
+    // If there's more than 1, try filtering by version.
+    for (const match of TypoList) if (match.version == file.version) return match;
+  }
 
   console.groupCollapsed(`${file.name}`);
   console.log(`Mod:`, mod);
