@@ -53,8 +53,7 @@ const NexusMod_Handler = async (mod: Mod, ModVersion?: string) =>
       ...NexusFileData,
     };
     // If it doesn't have a version, make a note and add it if we can
-    const hasVersion = NexusFileData.version !== "";
-    if (!hasVersion && ModVersion) {
+    if (NexusFileData.version && ModVersion) {
       fileData.version = ModVersion;
     }
     // If there's no version still, something is horribly wrong
@@ -72,6 +71,7 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
   const versionMatches = mod.json.filter((modFile) => modFile.version == file.version);
   if (versionMatches.length == 1) return versionMatches[0];
   else if (versionMatches.length > 1) {
+    // If there's more than 1, try filtering by name.
     for (const match of versionMatches) if (match.name == file.name) return match;
   }
 
@@ -81,8 +81,14 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
   else if (nameMatches.length > 1) {
     // If there's more than 1, try filtering by version.
     for (const match of nameMatches) if (match.version == file.version) return match;
-    // Now do it again but with semver
-    for (const match of nameMatches) if (coerce(match.version)?.raw == coerce(file.version)?.raw) return match;
+  }
+
+  // Look for a matching semver
+  const semverMatches = mod.json.filter((match) => coerce(match.version)?.raw === coerce(file.version)?.raw);
+  if (semverMatches.length == 1) return semverMatches[0];
+  else if (semverMatches.length > 1) {
+    // If there's more than 1, try filtering by name.
+    for (const match of semverMatches) if (match.name == file.name) return match;
   }
 
   // Test for files wrongly formatted with the version in the name
