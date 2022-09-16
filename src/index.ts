@@ -2,11 +2,12 @@ import AuthPrompt from "./AuthPrompt";
 import Validate from "./Validate";
 import DB from "./db";
 import { parseNexusMods } from "./modInfo";
+import log from "./logger";
 const db = new DB();
 
 // NXM Link: nxm://<GAME CODE>/mods/<MOD ID>/files/<FILE ID>
-console.clear();
-console.info("%cStarting Lexy+", "font-style: italic;");
+log.clear();
+log.info("Starting Lexy+");
 
 // Change the favicon link to use https (unless it's already fixed)
 document.querySelectorAll<HTMLLinkElement>(`link[rel~="icon"][href^="http:"]`).forEach((el) => {

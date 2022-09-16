@@ -3,6 +3,7 @@ import { IFileInfo, IModFiles } from "@nexusmods/nexus-api/lib/types";
 import { ModBox } from "./@types/lexy";
 import DB, { FileInfo, Mod } from "./db";
 import coerce from "semver/functions/coerce";
+import log from "./logger";
 
 const db = new DB();
 
@@ -67,10 +68,10 @@ const NexusMod_Handler = async (mod: Mod, ModVersion?: string) =>
     }
     // If there's no version still, something is horribly wrong
     if (!fileData.version) {
-      console.groupCollapsed(`No version: ${fileData.name}`);
-      console.log(`Mod:`, mod);
-      console.log(`File:`, fileData);
-      console.groupEnd();
+      log.group(`No version: ${fileData.name}`);
+      log.info(`Mod:`, mod);
+      log.info(`File:`, fileData);
+      log.groupEnd();
       throw new Error(`No version found for ${fileData.name}`);
     }
 
@@ -136,9 +137,9 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
     for (const match of TypoList) if (match.version == file.version) return match;
   }
 
-  console.groupCollapsed(`${file.name}`);
-  console.log(`Mod:`, mod);
-  console.log(`File:`, file);
-  console.groupEnd();
+  log.group(`${file.name}`);
+  log.info(`Mod:`, mod);
+  log.info(`File:`, file);
+  log.groupEnd();
   throw new Error(`No matches found for ${file.name}`);
 };
