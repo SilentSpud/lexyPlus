@@ -10,13 +10,15 @@ const db = new DB();
 export const modFilters: string[] = [];
 //export const modFilters: string[] = [``];
 
-// Map of mods that have typos
+// Map of mods that have typos / require substitutions
 const ModTypoFixes = new Map([
   // ["Nexus File Name", "Lexy File Name"],
   // Extra space on nexus side
   ["Voices EN  - Part 2", "Voices EN - Part 2"],
   // Extra s at the end on lexy side
   ["NO STARS Texture Overhaul Sky Collection Stars of Nirn (Mid Fantasy) No Stars By CKW25", "NO STARS Texture Overhaul Sky Collection Stars of Nirn (Mid Fantasy) No Stars By CKW25s"],
+  // Dash removed in the latest version (nexus side)
+  ["Skyland Solitude", "Skyland - Solitude"],
 ]);
 // Map of versions that have typos
 const VersionTypoFixes = new Map([
