@@ -4,10 +4,10 @@ import { FileInfo, Mod } from "./db";
 const log = (label: string, mod: Mod, file: FileInfo) => {
   console.groupCollapsed(`${label}: ${file.name}`);
   console.info(`Mod:`, mod);
-  console.info(`File:`, file);
   console.groupCollapsed(`Mod Files`);
   console.table(mod.json, ["file_id", "name", "version", "category_id"]);
   console.groupEnd();
+  console.info(`File:`, file);
   console.groupEnd();
 };
 log.group = (message: string, ...args: any[]) => {

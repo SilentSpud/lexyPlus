@@ -17,6 +17,8 @@ const ModTypoFixes = new Map([
   ["NO STARS Texture Overhaul Sky Collection Stars of Nirn (Mid Fantasy) No Stars By CKW25", "NO STARS Texture Overhaul Sky Collection Stars of Nirn (Mid Fantasy) No Stars By CKW25s"],
   // Dash removed in the latest version (nexus side)
   ["Skyland Solitude", "Skyland - Solitude"],
+  // Different
+  ["Lux Via (main mod)", "LUX - Via"],
 ]);
 // Map of versions that have typos
 const VersionTypoFixes = new Map([
@@ -53,6 +55,10 @@ const NexusMod_Fetch = async (mod: Mod) => {
   const filesRaw = await fetch(`https://api.nexusmods.com/v1/games/${mod.game}/mods/${mod.mod}/files.json`, {
     headers: { APIKey: sessionStorage.getItem("nexus-api-key") as string },
   });
+  if (filesRaw.status !== 200) {
+    log.error(`Error fetching files for ${mod.name}`, filesRaw);
+    throw new Error(`Error fetching files for ${mod.name} (${mod.mod})`);
+  }
   const json = (await filesRaw.json()) as IModFiles;
   return json.files;
 };
@@ -86,6 +92,8 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
     for (const match of versionMatches) if (match.name.toLowerCase() == file.name.toLowerCase()) return match;
     // Add the version to the name. Fixes "Riften Docks Overhaul"
     for (const match of versionMatches) if (match.name == `${file.name} ${file.version}`) return match;
+    // Add the version to the name but with a v this time. Fixes "Farmhouse Chimneys"
+    for (const match of versionMatches) if (match.name == `${file.name} v${file.version}`) return match;
   }
 
   // Look for a matching name
