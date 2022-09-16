@@ -13,8 +13,6 @@ export const modFilters: string[] = [];
 // Map of mods that have typos / require substitutions
 const ModTypoFixes = new Map([
   // ["Nexus File Name", "Lexy File Name"],
-  // Extra space on nexus side
-  ["Voices EN  - Part 2", "Voices EN - Part 2"],
   // Extra s at the end on lexy side
   ["NO STARS Texture Overhaul Sky Collection Stars of Nirn (Mid Fantasy) No Stars By CKW25", "NO STARS Texture Overhaul Sky Collection Stars of Nirn (Mid Fantasy) No Stars By CKW25s"],
   // Dash removed in the latest version (nexus side)
@@ -70,11 +68,7 @@ const NexusMod_Handler = async (mod: Mod, ModVersion?: string) =>
     }
     // If there's no version still, something is horribly wrong
     if (!fileData.version) {
-      log.group(`No version: ${fileData.name}`);
-      log.info(`Mod:`, mod);
-      log.info(`File:`, fileData);
-      log.groupEnd();
-      throw new Error(`No version found for ${fileData.name}`);
+      log("No version", mod, fileData);
     }
 
     const data = NexusMod_Parse(mod, fileData);
@@ -126,6 +120,14 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
     if (nameMatches.length == 1) return nameMatches[0];
   }
 
+  // Test for files with double spaces in the nexus file name. This eliminates several manual substitutions
+  const DoubleMatches = mod.json.filter((modFile) => modFile.name.replace(/\s\s/g, " ") == file.name);
+  if (DoubleMatches.length == 1) return DoubleMatches[0];
+  else if (DoubleMatches.length > 1) {
+    // If there's more than 1, try filtering by version.
+    for (const match of DoubleMatches) if (match.version == file.version) return match;
+  }
+
   // Typo fixes
   const TypoList = mod.json.filter((modFile) => {
     if (ModTypoFixes.has(modFile.name)) {
@@ -138,10 +140,6 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
     // If there's more than 1, try filtering by version.
     for (const match of TypoList) if (match.version == file.version) return match;
   }
-
-  log.group(`${file.name}`);
-  log.info(`Mod:`, mod);
-  log.info(`File:`, file);
-  log.groupEnd();
+  log("No matches", mod, file);
   throw new Error(`No matches found for ${file.name}`);
 };
