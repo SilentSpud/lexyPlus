@@ -80,7 +80,7 @@ const NexusMod_Handler = async (mod: Mod, ModVersion?: string) =>
 
 const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
   // Look for a matching version
-  const versionMatches = mod.json.filter((modFile) => modFile.version == file.version);
+  const versionMatches = mod.json.filter((modFile) => modFile.version == file.version).filter(removeDeleted);
   if (versionMatches.length == 1) return versionMatches[0];
   else if (versionMatches.length > 1) {
     // If there's more than 1, try filtering by name.
@@ -90,7 +90,7 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
   }
 
   // Look for a matching name
-  const nameMatches = mod.json.filter((modFile) => modFile.name == file.name);
+  const nameMatches = mod.json.filter((modFile) => modFile.name == file.name).filter(removeDeleted);
   if (nameMatches.length == 1) return nameMatches[0];
   else if (nameMatches.length > 1) {
     // If there's more than 1, try filtering by version.
@@ -103,7 +103,7 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
   }
 
   // Look for a matching semver
-  const semverMatches = mod.json.filter((match) => coerce(match.version)?.raw === coerce(file.version)?.raw);
+  const semverMatches = mod.json.filter((match) => coerce(match.version)?.raw === coerce(file.version)?.raw).filter(removeDeleted);
   if (semverMatches.length == 1) return semverMatches[0];
   else if (semverMatches.length > 1) {
     // If there's more than 1, try filtering by name.
@@ -113,7 +113,7 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
   // Test for files wrongly formatted with the version in the name
   if (versionRegex.test(file.name)) {
     const fileVersion = versionRegex.exec(file.name) as RegExpExecArray;
-    const regexMatches = mod.json.filter((modFile) => coerce(modFile.version)?.raw == coerce(fileVersion[3])?.raw);
+    const regexMatches = mod.json.filter((modFile) => coerce(modFile.version)?.raw == coerce(fileVersion[3])?.raw).filter(removeDeleted);
     // remove the version from the name
     const fileName = file.name.replace(fileVersion[0], "").trim();
     const nameMatches = regexMatches.filter((modFile) => modFile.name == fileName).filter(removeDeleted);
@@ -121,7 +121,7 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
   }
 
   // Test for files with double spaces in the nexus file name. This eliminates several manual substitutions
-  const DoubleMatches = mod.json.filter((modFile) => modFile.name.replace(/\s\s/g, " ") == file.name);
+  const DoubleMatches = mod.json.filter((modFile) => modFile.name.replace(/\s\s/g, " ") == file.name).filter(removeDeleted);
   if (DoubleMatches.length == 1) return DoubleMatches[0];
   else if (DoubleMatches.length > 1) {
     // If there's more than 1, try filtering by version.
