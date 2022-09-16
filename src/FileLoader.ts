@@ -10,6 +10,9 @@ const db = new DB();
 export const modFilters: string[] = [];
 //export const modFilters: string[] = [``];
 
+// Mods to skip processing
+const skipMods: string[] = ["Expanded Towns and Cities (SSE)"];
+
 // Map of mods that have typos / require substitutions
 const ModTypoFixes = new Map([
   // ["Nexus File Name", "Lexy File Name"],
@@ -33,6 +36,7 @@ const versionRegex = /((\s-\s)?v?(\d+(\.(\d|[ab])+)+))/;
 const removeDeleted = (file: IFileInfo) => file.category_id !== 6;
 
 export const NexusMod = async (modItem: Mod | ModBox) => {
+  if (skipMods.includes(modItem.name)) return;
   let modInfo = await db.mods.get(modItem.mod);
   if (!modInfo || !modInfo.json) {
     // If we don't have the mod or it's json, fetch it
