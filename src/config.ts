@@ -19,4 +19,5 @@ export const VersionTypoFixes = new Map([
   ["Better FaceLight and Conversation Redux", "3.20"],
   ["2. Majestic Mountains Darkside", "3.2"],
   ["Lucifer - Wyrmstooth - ESL", "1.1-Wyrm"],
+  ["Cleaned and Upscaled Textures", "1.1"],
 ]);

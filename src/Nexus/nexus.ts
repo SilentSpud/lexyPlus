@@ -1,5 +1,7 @@
+import fetch from "../GM_fetch";
 import { IModFiles } from "@nexusmods/nexus-api/lib/types";
 import { coerce } from "semver";
+import he from "he";
 import { ModBox } from "../@types/lexy";
 import { skipMods, VersionTypoFixes, ModTypoFixes } from "../config";
 import DB, { Mod, FileInfo } from "../db";
@@ -70,6 +72,8 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
     for (const match of versionMatches) if (match.name == `${file.name} ${file.version}`) return match;
     // Add the version to the name but with a v this time. Fixes "Farmhouse Chimneys"
     for (const match of versionMatches) if (match.name == `${file.name} v${file.version}`) return match;
+    // Try to unescape the name
+    for (const match of versionMatches) if (he.decode(match.name) == file.name) return match;
   }
 
   // Look for a matching name

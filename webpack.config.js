@@ -19,6 +19,7 @@ const WebpackConfig = {
   },
   externals: {
     dexie: "Dexie",
+    he: "he",
   },
   output: {
     path: outputPath,
@@ -60,6 +61,7 @@ const WebpackConfig = {
         grant: ["GM_xmlhttpRequest"],
         require: [
           "https://cdnjs.cloudflare.com/ajax/libs/dexie/3.2.2/dexie.min.js", // Dexie for database
+          "https://cdnjs.cloudflare.com/ajax/libs/he/1.2.0/he.min.js", // he for parsing html entities
         ],
       }),
       metajs: false,
