@@ -5,7 +5,7 @@ import he from "he";
 import { ModBox } from "../@types/lexy";
 import { skipMods, VersionTypoFixes, ModTypoFixes } from "../config";
 import DB, { Mod, FileInfo } from "../db";
-import { removeDeleted, versionRegex } from "../FileLoader";
+import { fileFilter, versionRegex } from "../FileLoader";
 import log from "../logger";
 const db = new DB();
 
@@ -63,70 +63,72 @@ const NexusMod_Handler = async (mod: Mod, ModVersion?: string) =>
 
 const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
   // Look for a matching version
-  const versionMatches = mod.json.filter((modFile) => modFile.version == file.version).filter(removeDeleted);
-  if (versionMatches.length == 1) return versionMatches[0];
-  else if (versionMatches.length > 1) {
+  const versionMatch = fileFilter(
+    mod.json,
+    (modFile) => modFile.version == file.version,
     // If there's more than 1, try filtering by name.
-    for (const match of versionMatches) if (match.name.toLowerCase() == file.name.toLowerCase()) return match;
+    (match) => match.name.toLowerCase() == file.name.toLowerCase(),
     // Add the version to the name. Fixes "Riften Docks Overhaul"
-    for (const match of versionMatches) if (match.name == `${file.name} ${file.version}`) return match;
+    (match) => match.name == `${file.name} ${file.version}`,
     // Add the version to the name but with a v this time. Fixes "Farmhouse Chimneys"
-    for (const match of versionMatches) if (match.name == `${file.name} v${file.version}`) return match;
-    // Try to unescape the name
-    for (const match of versionMatches) if (he.decode(match.name) == file.name) return match;
-  }
+    (match) => match.name == `${file.name} v${file.version}`,
+    // Decode any html entities in the name
+    (match) => he.decode(match.name) == file.name
+  );
+  if (versionMatch) return versionMatch;
 
   // Look for a matching name
-  const nameMatches = mod.json.filter((modFile) => modFile.name.toLowerCase() == file.name.toLowerCase()).filter(removeDeleted);
-  if (nameMatches.length == 1) return nameMatches[0];
-  else if (nameMatches.length > 1) {
+  const nameMatch = fileFilter(
+    mod.json,
+    (modFile) => modFile.name.toLowerCase() == file.name.toLowerCase(),
     // If there's more than 1, try filtering by version.
-    for (const match of nameMatches) if (match.version == file.version) return match;
+    (match) => match.version == file.version,
     // check if the file's in the version typo list, and if so, test that version instead
-    if (VersionTypoFixes.has(file.name)) {
-      const fixedVersion = VersionTypoFixes.get(file.name);
-      for (const match of nameMatches) if (match.version == fixedVersion) return match;
-    }
-  }
+    (match) => VersionTypoFixes.has(file.name) && match.version == VersionTypoFixes.get(file.name)
+  );
+  if (nameMatch) return nameMatch;
 
   // Look for a matching semver
-  const semverMatches = mod.json.filter((match) => coerce(match.version)?.raw === coerce(file.version)?.raw).filter(removeDeleted);
-  if (semverMatches.length == 1) return semverMatches[0];
-  else if (semverMatches.length > 1) {
+  const semverMatch = fileFilter(
+    mod.json,
+    (match) => coerce(match.version)?.raw === coerce(file.version)?.raw,
     // If there's more than 1, try filtering by name.
-    for (const match of semverMatches) if (match.name.trim() == file.name.trim()) return match;
-  }
+    (match) => match.name.trim() == file.name.trim()
+  );
+  if (semverMatch) return semverMatch;
 
   // Test for files wrongly formatted with the version in the name
   if (versionRegex.test(file.name)) {
-    const fileVersion = versionRegex.exec(file.name) as RegExpExecArray;
-    const regexMatches = mod.json.filter((modFile) => coerce(modFile.version)?.raw == coerce(fileVersion[3])?.raw).filter(removeDeleted);
-    // remove the version from the name
-    const fileName = file.name.replace(fileVersion[0], "").trim();
-    const nameMatches = regexMatches.filter((modFile) => modFile.name.trim() == fileName.trim()).filter(removeDeleted);
-    if (nameMatches.length == 1) return nameMatches[0];
+    const [verString, , , verValue] = versionRegex.exec(file.name) as RegExpExecArray;
+    const fileName = file.name.replace(verString, "").trim();
+    const regexMatch = fileFilter(
+      mod.json,
+      (modFile) => coerce(modFile.version)?.raw == coerce(verValue)?.raw,
+      // If there's more than 1, try filtering by name.
+      (match) => match.name.trim() == file.name.trim(),
+      // Now try with the version stripped
+      (match) => match.name.trim() == fileName
+    );
+    if (regexMatch) return regexMatch;
   }
 
   // Test for files with double spaces in the nexus file name. This eliminates several manual substitutions
-  const DoubleMatches = mod.json.filter((modFile) => modFile.name.replace(/\s\s/g, " ") == file.name).filter(removeDeleted);
-  if (DoubleMatches.length == 1) return DoubleMatches[0];
-  else if (DoubleMatches.length > 1) {
-    // If there's more than 1, try filtering by version.
-    for (const match of DoubleMatches) if (match.version.trim() == file.version.trim()) return match;
-  }
+  const doubleSpaceMatch = fileFilter(
+    mod.json,
+    (modFile) => modFile.name.replace(/\s\s/g, " ") == file.name,
+    (match) => match.version.trim() == file.version.trim()
+  );
+  if (doubleSpaceMatch) return doubleSpaceMatch;
 
   // Typo fixes
-  const TypoList = mod.json.filter((modFile) => {
-    if (ModTypoFixes.has(modFile.name)) {
-      const fixedName = ModTypoFixes.get(modFile.name);
-      return fixedName == file.name;
-    }
-  });
-  if (TypoList.length == 1) return TypoList[0];
-  else if (TypoList.length > 1) {
-    // If there's more than 1, try filtering by version.
-    for (const match of TypoList) if (match.version == file.version) return match;
-  }
+  const typoMatch = fileFilter(
+    mod.json,
+    (modFile) => ModTypoFixes.has(modFile.name) && ModTypoFixes.get(modFile.name) == file.name,
+    (match) => match.version == file.version
+  );
+  if (typoMatch) return typoMatch;
+
+  // If we still haven't found it, then manual intervention is needed
   log("No matches", mod, file);
   throw new Error(`No matches found for ${file.name}`);
 };
