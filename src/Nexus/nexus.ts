@@ -94,7 +94,7 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
   if (semverMatches.length == 1) return semverMatches[0];
   else if (semverMatches.length > 1) {
     // If there's more than 1, try filtering by name.
-    for (const match of semverMatches) if (match.name == file.name) return match;
+    for (const match of semverMatches) if (match.name.trim() == file.name.trim()) return match;
   }
 
   // Test for files wrongly formatted with the version in the name
@@ -103,7 +103,7 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
     const regexMatches = mod.json.filter((modFile) => coerce(modFile.version)?.raw == coerce(fileVersion[3])?.raw).filter(removeDeleted);
     // remove the version from the name
     const fileName = file.name.replace(fileVersion[0], "").trim();
-    const nameMatches = regexMatches.filter((modFile) => modFile.name == fileName).filter(removeDeleted);
+    const nameMatches = regexMatches.filter((modFile) => modFile.name.trim() == fileName.trim()).filter(removeDeleted);
     if (nameMatches.length == 1) return nameMatches[0];
   }
 
@@ -112,7 +112,7 @@ const NexusMod_Parse = (mod: Mod, file: FileInfo) => {
   if (DoubleMatches.length == 1) return DoubleMatches[0];
   else if (DoubleMatches.length > 1) {
     // If there's more than 1, try filtering by version.
-    for (const match of DoubleMatches) if (match.version == file.version) return match;
+    for (const match of DoubleMatches) if (match.version.trim() == file.version.trim()) return match;
   }
 
   // Typo fixes
