@@ -1,6 +1,7 @@
 import { ModBox } from "./@types/lexy";
 import { FileInfo } from "./db";
-import { modFilters, NexusMod } from "./FileLoader";
+import { modFilters } from "./FileLoader";
+import { NexusMod } from "./Nexus/nexus";
 
 const VersionRegex = new RegExp("https://img\\.shields\\.io/badge/Version-(.*)-informational\\.svg", "i");
 const NexusRegex = new RegExp("https://www\\.nexusmods\\.com/(.*)/mods/(.*)(\\?.*)?", "i");
