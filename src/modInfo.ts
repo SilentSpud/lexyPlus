@@ -9,23 +9,7 @@ const NexusRegex = new RegExp("https://www\\.nexusmods\\.com/(.*)/mods/(.*)(\\?.
 const parseFileDescriptor = (fileDescriptor: HTMLSpanElement): FileInfo => {
   const fileDesc = fileDescriptor.cloneNode(true) as HTMLSpanElement;
   fileDesc.querySelector(".mod-file-item-version-label")?.remove();
-  // Categories are a regex of how they appear in the output, as we're doing 1 request and reusing the output for every file
-  const category = ((input: string) => {
-    switch (input) {
-      case "Main Files":
-        return 1;
-      case "Update Files":
-        return 2;
-      case "Optional Files":
-        return 3;
-      case "Old Files":
-        return 4;
-      case "Miscellaneous Files":
-        return 5;
-      default:
-        return undefined;
-    }
-  })(fileDesc.querySelector<HTMLSpanElement>(".mod-file-item-category")?.innerText ?? "");
+
   const name = fileDesc.querySelector<HTMLSpanElement>(".mod-file-item-name")?.innerText ?? "A file";
   const version = fileDesc.querySelector<HTMLSpanElement>(".mod-file-item-version")?.innerText.trim() ?? "";
   return { name, version };
@@ -46,7 +30,7 @@ export const parseNexusMods = async () => {
 
     const linkData = NexusRegex.exec(modLink.href);
     if (!linkData) throw new Error("Invalid Nexus Link");
-    const [_, gameId, modId] = linkData;
+    const [, gameId, modId] = linkData;
 
     // parse the files into something more searchable
     const files = Array.from(modElem.querySelectorAll<HTMLSpanElement>("span.mod-file-item")).map(parseFileDescriptor);
